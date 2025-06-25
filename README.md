@@ -6,6 +6,7 @@ A Next.js-based SaaS platform for creating customizable profile cards as a link 
 - **Authentication**: NextAuth.js with email/password login.
 - **Dashboard**: CMS for customizing `ProfileCard` settings (name, title, handle, images, gradients, etc.) with real-time preview.
 - **ProfileCard**: Customizable card with tilt effects, gradients, and mobile device orientation support.
+- **Link Management**: Add, edit, and delete links at `/dashboard/links`.
 - **Database**: PostgreSQL with Prisma for managing users, profiles, links, and analytics.
 - **Styling**: Dark theme (`#0a0a0a` background, `#ededed` text) using Tailwind CSS.
 - **Deployment**: Ready for Vercel with environment variable support.
@@ -84,6 +85,7 @@ npm run dev
 Open [http://localhost:3000](http://localhost:3000) in your browser:
 - Log in at `/login` with `test@example.com` and `password123`.
 - Navigate to `/dashboard` and `/dashboard/profile` to customize the `ProfileCard`.
+- Navigate to `/dashboard/links` to manage links (URL, type, order).
 
 ### 7. Deploy to Vercel
 - Install Vercel CLI:

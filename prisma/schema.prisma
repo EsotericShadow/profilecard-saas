@@ -22,7 +22,7 @@ model Profile {
   userId           String   @unique
   name             String?
   title            String?
-  handle           String?
+  handle           String   @unique // Changed from String? to String
   status           String?
   contactText      String?
   avatarUrl        String?

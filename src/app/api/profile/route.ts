@@ -3,6 +3,26 @@ import { getServerSession } from 'next-auth';
 import prisma from '@/lib/db';
 import { authOptions } from '@/lib/auth';
 
+interface ProfileData {
+  name?: string | null;
+  title?: string | null;
+  handle: string; // Non-nullable to match schema.prisma
+  status?: string | null;
+  contactText?: string | null;
+  avatarUrl?: string | null;
+  iconUrl?: string | null;
+  grainUrl?: string | null;
+  miniAvatarUrl?: string | null;
+  behindGradient?: string | null;
+  innerGradient?: string | null;
+  showBehindGradient?: boolean;
+  enableTilt?: boolean;
+  showUserInfo?: boolean;
+  cardRadius?: number;
+  bio?: string | null;
+  theme?: object;
+}
+
 export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -13,7 +33,7 @@ export async function GET() {
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  const data = await request.json();
+  const data: ProfileData = await request.json();
   const profile = await prisma.profile.upsert({
     where: { userId: session.user.id },
     update: {

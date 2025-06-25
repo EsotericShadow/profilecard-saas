@@ -1,3 +1,5 @@
+'use client';
+
 /*
 	Installed from https://reactbits.dev/ts/default/
 	Enhanced with device orientation support for mobile - TypeScript fixed
@@ -7,21 +9,22 @@ import React, { useEffect, useRef, useCallback, useMemo, useState } from 'react'
 import './ProfileCard.css';
 
 interface ProfileCardProps {
-  avatarUrl?: string; // Changed to optional to align with schema.prisma
-  iconUrl?: string;
-  grainUrl?: string;
-  behindGradient?: string;
-  innerGradient?: string;
+  avatarUrl?: string | null;
+  iconUrl?: string | null;
+  grainUrl?: string | null;
+  behindGradient?: string | null;
+  innerGradient?: string | null;
   showBehindGradient?: boolean;
   className?: string;
   enableTilt?: boolean;
-  miniAvatarUrl?: string;
-  name?: string;
-  title?: string;
-  handle?: string;
-  status?: string;
-  contactText?: string;
+  miniAvatarUrl?: string | null;
+  name?: string | null;
+  title?: string | null;
+  handle: string; // Non-nullable to match schema.prisma
+  status?: string | null;
+  contactText?: string | null;
   showUserInfo?: boolean;
+  cardRadius?: number; // Used for border-radius
   onContactClick?: () => void;
 }
 
@@ -93,6 +96,7 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
   status = 'Online',
   contactText = 'Contact',
   showUserInfo = true,
+  cardRadius = 30,
   onContactClick,
 }) => {
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -391,8 +395,9 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
           ? (behindGradient || DEFAULT_BEHIND_GRADIENT)
           : 'none',
         '--inner-gradient': innerGradient || DEFAULT_INNER_GRADIENT,
+        borderRadius: `${cardRadius}px`, // Apply cardRadius
       }) as React.CSSProperties,
-    [iconUrl, grainUrl, showBehindGradient, behindGradient, innerGradient]
+    [iconUrl, grainUrl, showBehindGradient, behindGradient, innerGradient, cardRadius]
   );
 
   const handleContactClick = useCallback(() => {
@@ -442,7 +447,7 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
                       // Using <img> for simplicity, as the avatars are small and lazy-loaded
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
-                        src={miniAvatarUrl || avatarUrl}
+                        src={miniAvatarUrl ?? avatarUrl ?? undefined}
                         alt={`${name || 'User'} mini avatar`}
                         loading="lazy"
                         onError={(e) => {

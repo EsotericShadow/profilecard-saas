@@ -13,17 +13,19 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
-
-    const result = await signIn('credentials', {
-      email,
-      password,
-      redirect: false,
-    });
-
-    if (result?.error) {
-      setError('Invalid email or password');
-    } else {
-      router.push('/dashboard');
+    try {
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+      });
+      if (result?.error) {
+        setError('Invalid email or password. Please check your credentials.');
+      } else {
+        router.push('/dashboard');
+      }
+    } catch {
+      setError('An unexpected error occurred. Please try again later.');
     }
   };
 
