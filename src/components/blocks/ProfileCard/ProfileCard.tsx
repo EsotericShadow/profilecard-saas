@@ -7,7 +7,7 @@ import React, { useEffect, useRef, useCallback, useMemo, useState } from 'react'
 import './ProfileCard.css';
 
 interface ProfileCardProps {
-  avatarUrl: string;
+  avatarUrl?: string; // Changed to optional to align with schema.prisma
   iconUrl?: string;
   grainUrl?: string;
   behindGradient?: string;
@@ -78,9 +78,9 @@ const isMobile = () => {
 };
 
 const ProfileCardComponent: React.FC<ProfileCardProps> = ({
-  avatarUrl = '<Placeholder for avatar URL>',
-  iconUrl = '<Placeholder for icon URL>',
-  grainUrl = '<Placeholder for grain URL>',
+  avatarUrl,
+  iconUrl,
+  grainUrl,
   behindGradient,
   innerGradient,
   showBehindGradient = true,
@@ -418,34 +418,40 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
           <div className="pc-shine" />
           <div className="pc-glare" />
           <div className="pc-content pc-avatar-content">
-            {/* Using <img> for simplicity, as the avatars are small and lazy-loaded */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              className="avatar"
-              src={avatarUrl}
-              alt={`${name || 'User'} avatar`}
-              loading="lazy"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.style.display = 'none';
-              }}
-            />
+            {/* Conditionally render main avatar image only if avatarUrl is a non-empty string */}
+            {avatarUrl && (
+              // Using <img> for simplicity, as the avatars are small and lazy-loaded
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                className="avatar"
+                src={avatarUrl}
+                alt={`${name || 'User'} avatar`}
+                loading="lazy"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                }}
+              />
+            )}
             {showUserInfo && (
               <div className="pc-user-info">
                 <div className="pc-user-details">
                   <div className="pc-mini-avatar">
-                    {/* Using <img> for simplicity, as the avatars are small and lazy-loaded */}
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={miniAvatarUrl || avatarUrl}
-                      alt={`${name || 'User'} mini avatar`}
-                      loading="lazy"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.opacity = '0.5';
-                        target.src = avatarUrl;
-                      }}
-                    />
+                    {/* Conditionally render mini avatar image only if miniAvatarUrl or avatarUrl is a non-empty string */}
+                    {(miniAvatarUrl || avatarUrl) && (
+                      // Using <img> for simplicity, as the avatars are small and lazy-loaded
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={miniAvatarUrl || avatarUrl}
+                        alt={`${name || 'User'} mini avatar`}
+                        loading="lazy"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.opacity = '0.5';
+                          if (avatarUrl) target.src = avatarUrl;
+                        }}
+                      />
+                    )}
                   </div>
                   <div className="pc-user-text">
                     <div className="pc-handle">@{handle}</div>
@@ -488,4 +494,3 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
 const ProfileCard = React.memo(ProfileCardComponent);
 
 export default ProfileCard;
-

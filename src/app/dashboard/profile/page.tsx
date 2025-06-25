@@ -59,21 +59,8 @@ export default function ProfileSettingsPage() {
     if (!formData.handle.trim()) newErrors.handle = 'Handle is required';
     if (!formData.status.trim()) newErrors.status = 'Status is required';
     if (!formData.contactText.trim()) newErrors.contactText = 'Contact text is required';
-    if (formData.avatarUrl && !isValidUrl(formData.avatarUrl)) newErrors.avatarUrl = 'Invalid URL';
-    if (formData.iconUrl && !isValidUrl(formData.iconUrl)) newErrors.iconUrl = 'Invalid URL';
-    if (formData.grainUrl && !isValidUrl(formData.grainUrl)) newErrors.grainUrl = 'Invalid URL';
-    if (formData.miniAvatarUrl && !isValidUrl(formData.miniAvatarUrl)) newErrors.miniAvatarUrl = 'Invalid URL';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
-
-  const isValidUrl = (url: string) => {
-    try {
-      new URL(url);
-      return true;
-    } catch {
-      return false;
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -101,13 +88,42 @@ export default function ProfileSettingsPage() {
     setIsSaving(false);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
     }));
     setErrors(prev => ({ ...prev, [name]: '' }));
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type and size
+    if (file.type !== 'image/png') {
+      setErrors(prev => ({ ...prev, [field]: 'Only PNG files are allowed' }));
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      setErrors(prev => ({ ...prev, [field]: 'File size must be under 5MB' }));
+      return;
+    }
+
+    // Convert file to base64
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFormData(prev => ({
+        ...prev,
+        [field]: reader.result as string,
+      }));
+      setErrors(prev => ({ ...prev, [field]: '' }));
+    };
+    reader.onerror = () => {
+      setErrors(prev => ({ ...prev, [field]: 'Failed to read file' }));
+    };
+    reader.readAsDataURL(file);
   };
 
   return (
@@ -122,7 +138,7 @@ export default function ProfileSettingsPage() {
                 <input
                   name="name"
                   value={formData.name}
-                  onChange={handleChange}
+                  onChange={handleTextChange}
                   placeholder="Javi A. Torres"
                   className="p-2 rounded border bg-gray-800 text-white border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 w-full"
                 />
@@ -133,7 +149,7 @@ export default function ProfileSettingsPage() {
                 <input
                   name="title"
                   value={formData.title}
-                  onChange={handleChange}
+                  onChange={handleTextChange}
                   placeholder="Software Engineer"
                   className="p-2 rounded border bg-gray-800 text-white border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 w-full"
                 />
@@ -144,7 +160,7 @@ export default function ProfileSettingsPage() {
                 <input
                   name="handle"
                   value={formData.handle}
-                  onChange={handleChange}
+                  onChange={handleTextChange}
                   placeholder="@javicodes"
                   className="p-2 rounded border bg-gray-800 text-white border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 w-full"
                 />
@@ -155,7 +171,7 @@ export default function ProfileSettingsPage() {
                 <input
                   name="status"
                   value={formData.status}
-                  onChange={handleChange}
+                  onChange={handleTextChange}
                   placeholder="Online"
                   className="p-2 rounded border bg-gray-800 text-white border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 w-full"
                 />
@@ -166,53 +182,49 @@ export default function ProfileSettingsPage() {
                 <input
                   name="contactText"
                   value={formData.contactText}
-                  onChange={handleChange}
+                  onChange={handleTextChange}
                   placeholder="Contact"
                   className="p-2 rounded border bg-gray-800 text-white border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 w-full"
                 />
                 {errors.contactText && <p className="text-red-500 text-sm mt-1">{errors.contactText}</p>}
               </div>
               <div>
-                <label className="block text-sm font-medium text-white mb-1">Avatar URL</label>
+                <label className="block text-sm font-medium text-white mb-1">Avatar Image (PNG)</label>
                 <input
-                  name="avatarUrl"
-                  value={formData.avatarUrl}
-                  onChange={handleChange}
-                  placeholder="/avatar.png"
-                  className="p-2 rounded border bg-gray-800 text-white border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 w-full"
+                  type="file"
+                  accept="image/png"
+                  onChange={(e) => handleFileChange(e, 'avatarUrl')}
+                  className="p-2 rounded border bg-gray-800 text-white border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 w-full file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-green-600 file:text-white hover:file:bg-green-700"
                 />
                 {errors.avatarUrl && <p className="text-red-500 text-sm mt-1">{errors.avatarUrl}</p>}
               </div>
               <div>
-                <label className="block text-sm font-medium text-white mb-1">Icon URL</label>
+                <label className="block text-sm font-medium text-white mb-1">Icon Image (PNG)</label>
                 <input
-                  name="iconUrl"
-                  value={formData.iconUrl}
-                  onChange={handleChange}
-                  placeholder="/icon.png"
-                  className="p-2 rounded border bg-gray-800 text-white border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 w-full"
+                  type="file"
+                  accept="image/png"
+                  onChange={(e) => handleFileChange(e, 'iconUrl')}
+                  className="p-2 rounded border bg-gray-800 text-white border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 w-full file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-green-600 file:text-white hover:file:bg-green-700"
                 />
                 {errors.iconUrl && <p className="text-red-500 text-sm mt-1">{errors.iconUrl}</p>}
               </div>
               <div>
-                <label className="block text-sm font-medium text-white mb-1">Grain URL</label>
+                <label className="block text-sm font-medium text-white mb-1">Grain Texture (PNG)</label>
                 <input
-                  name="grainUrl"
-                  value={formData.grainUrl}
-                  onChange={handleChange}
-                  placeholder="/grain.png"
-                  className="p-2 rounded border bg-gray-800 text-white border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 w-full"
+                  type="file"
+                  accept="image/png"
+                  onChange={(e) => handleFileChange(e, 'grainUrl')}
+                  className="p-2 rounded border bg-gray-800 text-white border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 w-full file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-green-600 file:text-white hover:file:bg-green-700"
                 />
                 {errors.grainUrl && <p className="text-red-500 text-sm mt-1">{errors.grainUrl}</p>}
               </div>
               <div>
-                <label className="block text-sm font-medium text-white mb-1">Mini Avatar URL</label>
+                <label className="block text-sm font-medium text-white mb-1">Mini Avatar Image (PNG)</label>
                 <input
-                  name="miniAvatarUrl"
-                  value={formData.miniAvatarUrl}
-                  onChange={handleChange}
-                  placeholder="/avatar.png"
-                  className="p-2 rounded border bg-gray-800 text-white border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 w-full"
+                  type="file"
+                  accept="image/png"
+                  onChange={(e) => handleFileChange(e, 'miniAvatarUrl')}
+                  className="p-2 rounded border bg-gray-800 text-white border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 w-full file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-green-600 file:text-white hover:file:bg-green-700"
                 />
                 {errors.miniAvatarUrl && <p className="text-red-500 text-sm mt-1">{errors.miniAvatarUrl}</p>}
               </div>
@@ -221,8 +233,8 @@ export default function ProfileSettingsPage() {
                 <textarea
                   name="behindGradient"
                   value={formData.behindGradient}
-                  onChange={handleChange}
-                  placeholder="radial-gradient(farthest-side circle at var(--pointer-x) var(--pointer-y),hsla(266,100%,90%,var(--card-opacity)) 4%,hsla(266,50%,80%,calc(var(--card-opacity)*0.75)) 10%,hsla(266,25%,70%,calc(var(--card-opacity)*0.5)) 50%,hsla(266,0%,60%,0) 100%)"
+                  onChange={handleTextChange}
+                  placeholder="radial-gradient(farthest-side circle at var(--pointer-x) var(--pointer-y),hsla(266,100%,90%,var(--card-opacity)) 4%,hsla(266,50%,80%,calc(var(--card-opacity)*0.75)) 10%,hsla(266,25%,70%,calc(var--card-opacity)*0.5)) 50%,hsla(266,0%,60%,0) 100%)"
                   className="p-2 rounded border bg-gray-800 text-white border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 w-full h-24"
                 />
               </div>
@@ -231,7 +243,7 @@ export default function ProfileSettingsPage() {
                 <textarea
                   name="innerGradient"
                   value={formData.innerGradient}
-                  onChange={handleChange}
+                  onChange={handleTextChange}
                   placeholder="linear-gradient(145deg,#60496e8c 0%,#71C4FF44 100%)"
                   className="p-2 rounded border bg-gray-800 text-white border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 w-full h-24"
                 />
@@ -242,7 +254,7 @@ export default function ProfileSettingsPage() {
                   type="number"
                   name="cardRadius"
                   value={formData.cardRadius}
-                  onChange={handleChange}
+                  onChange={handleTextChange}
                   placeholder="30"
                   className="p-2 rounded border bg-gray-800 text-white border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 w-full"
                   min="0"
@@ -256,7 +268,7 @@ export default function ProfileSettingsPage() {
                   type="checkbox"
                   name="showBehindGradient"
                   checked={formData.showBehindGradient}
-                  onChange={handleChange}
+                  onChange={handleTextChange}
                   className="form-checkbox h-5 w-5 text-green-500"
                 />
                 Show Behind Gradient
@@ -266,7 +278,7 @@ export default function ProfileSettingsPage() {
                   type="checkbox"
                   name="enableTilt"
                   checked={formData.enableTilt}
-                  onChange={handleChange}
+                  onChange={handleTextChange}
                   className="form-checkbox h-5 w-5 text-green-500"
                 />
                 Enable Tilt Effect
@@ -276,7 +288,7 @@ export default function ProfileSettingsPage() {
                   type="checkbox"
                   name="showUserInfo"
                   checked={formData.showUserInfo}
-                  onChange={handleChange}
+                  onChange={handleTextChange}
                   className="form-checkbox h-5 w-5 text-green-500"
                 />
                 Show User Info
