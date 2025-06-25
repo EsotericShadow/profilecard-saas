@@ -32,6 +32,8 @@ export async function POST(request: Request) {
       enableTilt: data.enableTilt,
       showUserInfo: data.showUserInfo,
       cardRadius: data.cardRadius,
+      bio: data.bio,
+      theme: data.theme,
     },
     create: {
       userId: session.user.id,
@@ -50,6 +52,8 @@ export async function POST(request: Request) {
       enableTilt: data.enableTilt,
       showUserInfo: data.showUserInfo,
       cardRadius: data.cardRadius,
+      bio: data.bio,
+      theme: data.theme,
     },
   });
   return NextResponse.json(profile);
