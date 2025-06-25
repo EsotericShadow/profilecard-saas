@@ -5,7 +5,7 @@ export async function GET() {
   try {
     await prisma.user.findMany();
     return NextResponse.json({ message: "Database connection successful" });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Database connection failed" }, { status: 500 });
   }
 }

@@ -1,13 +1,12 @@
 'use client';
 
 import { useSession } from 'next-auth/react';
-import { redirect, usePathname } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { signOut } from 'next-auth/react';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
-  const pathname = usePathname();
 
   if (status === 'loading') {
     return (
@@ -46,7 +45,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </button>
         </nav>
       </aside>
-      <main className="flex-1 p-6">{children}</main>
+      <main className="flex-1 p-6 bg-gradient-to-br from-[#0a0a0a] via-[#1c1c1e] to-[#2c2c2e]">{children}</main>
     </div>
   );
 }

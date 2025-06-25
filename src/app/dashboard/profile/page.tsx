@@ -95,7 +95,7 @@ export default function ProfileSettingsPage() {
       } else {
         setMessage('Error saving profile');
       }
-    } catch (error) {
+    } catch {
       setMessage('Error saving profile');
     }
     setIsSaving(false);
