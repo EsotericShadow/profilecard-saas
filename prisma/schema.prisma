@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  password  String?
+  plan      String   @default("free")
+  createdAt DateTime @default(now())
+  profile   Profile? @relation("UserProfile")
+}
+
+model Profile {
+  id            String  @id @default(uuid())
+  userId        String  @unique
+  bio           String?
+  avatarUrl     String?
+  iconUrl       String?
+  grainUrl      String?
+  miniAvatarUrl String?
+  name          String?
+  title         String?
+  handle        String?
+  status        String?
+  contactText   String?
+  showUserInfo  Boolean @default(true)
+  enableTilt    Boolean @default(true)
+  customization Json?
+  theme         Json?
+  links         Link[]
+  user          User    @relation("UserProfile", fields: [userId], references: [id])
+}
+
+model Link {
+  id        String  @id @default(uuid())
+  profileId String
+  url       String
+  type      String
+  order     Int
+  profile   Profile @relation(fields: [profileId], references: [id])
+}
+
+model Analytic {
+  id        String   @id @default(uuid())
+  profileId String
+  type      String
+  createdAt DateTime @default(now())
+}

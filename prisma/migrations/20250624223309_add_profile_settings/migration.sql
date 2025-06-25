@@ -1,0 +1,16 @@
+-- AlterTable
+ALTER TABLE "Profile" ADD COLUMN     "behindGradient" TEXT,
+ADD COLUMN     "cardRadius" INTEGER NOT NULL DEFAULT 30,
+ADD COLUMN     "contactText" TEXT,
+ADD COLUMN     "enableTilt" BOOLEAN NOT NULL DEFAULT true,
+ADD COLUMN     "grainUrl" TEXT,
+ADD COLUMN     "handle" TEXT,
+ADD COLUMN     "iconUrl" TEXT,
+ADD COLUMN     "innerGradient" TEXT,
+ADD COLUMN     "miniAvatarUrl" TEXT,
+ADD COLUMN     "name" TEXT,
+ADD COLUMN     "showBehindGradient" BOOLEAN NOT NULL DEFAULT true,
+ADD COLUMN     "showUserInfo" BOOLEAN NOT NULL DEFAULT true,
+ADD COLUMN     "status" TEXT,
+ADD COLUMN     "title" TEXT,
+ALTER COLUMN "theme" DROP NOT NULL;
