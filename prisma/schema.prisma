@@ -18,27 +18,29 @@ model User {
 }
 
 model Profile {
-  id               String   @id @default(uuid())
-  userId           String   @unique
-  name             String?
-  title            String?
-  handle           String   @unique // Changed from String? to String
-  status           String?
-  contactText      String?
-  avatarUrl        String?
-  iconUrl          String?
-  grainUrl         String?
-  miniAvatarUrl    String?
-  behindGradient   String?
-  innerGradient    String?
-  showBehindGradient Boolean @default(true)
-  enableTilt       Boolean @default(true)
-  showUserInfo     Boolean @default(true)
-  cardRadius       Int     @default(30)
-  bio              String?
-  theme            Json?
-  links            Link[]
-  user             User    @relation("UserProfile", fields: [userId], references: [id])
+  id                String   @id @default(uuid())
+  userId            String   @unique
+  name              String?
+  title             String?
+  handle            String   @unique
+  status            String?
+  contactText       String?
+  avatarUrl         String?
+  iconUrl           String?
+  grainUrl          String?
+  miniAvatarUrl     String?
+  behindGradient    String?
+  innerGradient     String?
+  showBehindGradient Boolean  @default(true)
+  enableTilt        Boolean   @default(true)
+  showUserInfo      Boolean   @default(true)
+  cardRadius        Int       @default(30)
+  bio               String?
+  theme             Json?
+  links             Link[]
+  user              User      @relation("UserProfile", fields: [userId], references: [id])
+
+  @@index([handle])
 }
 
 model Link {
